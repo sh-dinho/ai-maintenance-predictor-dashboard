@@ -1,0 +1,8 @@
+equipment_id,failure_probability,risk_level,lastMaintenanceDate,sensorLocation
+Pump-001,0.85,High,2025-05-01,Boiler Room
+Valve-002,0.45,Medium,2025-04-15,Main Line
+Motor-003,0.10,Low,2025-03-20,Assembly Area
+Fan-004,1.20,High,2025-05-10,Storage Room
+Sensor-005,0.50,InvalidRisk,2025-04-01,Control Panel
+Compressor-006,abc,Medium,2025-02-28,Workshop
+Pipe-007,0.70,High,not-a-date,Underground

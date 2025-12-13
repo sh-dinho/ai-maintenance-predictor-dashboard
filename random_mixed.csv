@@ -1,0 +1,21 @@
+equipment_id,failure_probability,risk_level,lastMaintenanceDate,sensorLocation
+Equip-1,0.32,InvalidRisk,2025-07-26,Boiler Room
+Equip-2,0.38,InvalidRisk,2025-07-07,Underground
+Equip-3,1.5,Low,2025-06-12,Main Line
+Equip-4,1.5,High,2025-09-22,Storage Room
+Equip-5,0.50,InvalidRisk,2025-10-24,Boiler Room
+Equip-6,0.59,High,not-a-date,Assembly Area
+Equip-7,0.73,Low,not-a-date,Underground
+Equip-8,0.35,InvalidRisk,2025-06-04,Assembly Area
+Equip-9,1.5,Medium,2025-06-18,Storage Room
+Equip-10,1.5,Medium,2025-03-25,Underground
+Equip-11,abc,Medium,2025-10-15,Main Line
+Equip-12,abc,Low,2025-01-24,Boiler Room
+Equip-13,0.11,Medium,not-a-date,Main Line
+Equip-14,0.21,Low,not-a-date,Control Panel
+Equip-15,0.02,High,not-a-date,Storage Room
+Equip-16,1.5,Low,2025-12-30,Main Line
+Equip-17,abc,Medium,2025-11-02,Underground
+Equip-18,0.06,Medium,not-a-date,Storage Room
+Equip-19,1.5,Low,2025-10-25,Assembly Area
+Equip-20,0.22,InvalidRisk,2025-11-03,Assembly Area
