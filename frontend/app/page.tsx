@@ -3,6 +3,7 @@
 import Upload from "@/components/Upload";
 import RiskTable from "@/components/RiskTable";
 import RecommendationPanel from "@/components/RecommendationPanel";
+import RiskSummary from "@/components/RiskSummary"; // ✅ add this import
 import { useState } from "react";
 
 type RiskRow = {
@@ -15,11 +16,9 @@ export default function HomePage() {
   const [data, setData] = useState<RiskRow[]>([]);
   const [recommendations, setRecommendations] = useState<string[]>([]);
 
-  const handleUploadComplete = (results: any[]) => {
-    // Update risk table data
+  const handleUploadComplete = (results: RiskRow[]) => {
     setData(results);
 
-    // Generate mock recommendations for demo
     const recs = results.map(
       (r) =>
         `Schedule maintenance for ${r.equipment_id} due to ${r.risk_level} risk.`
@@ -41,7 +40,8 @@ export default function HomePage() {
 
       {/* Dashboard layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
+          <RiskSummary data={data} />
           <RiskTable data={data} />
         </div>
         <RecommendationPanel recommendations={recommendations} />
