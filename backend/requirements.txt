@@ -14,7 +14,7 @@ python-multipart==0.0.9
 
 # --- LLM Integration ---
 openai==1.52.0
-azure-ai-openai==11.0.2   # Correct package for Azure OpenAI
+azure-ai-openai==11.0.2
 
-# --- Optional: TensorFlow (Intel build) ---
-tensorflow-intel==2.17.0
+# --- TensorFlow (Linux/CI) ---
+tensorflow==2.17.0
