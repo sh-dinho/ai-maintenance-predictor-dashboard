@@ -7,35 +7,51 @@ on:
     branches: [ main ]
 
 jobs:
-  setup:
-    name: Setup Node & Python
+  frontend:
+    name: Frontend Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # Setup Python
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: Build frontend
+        run: cd frontend && npm run build
+
+      - name: Upload frontend build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: frontend/.next
+
+  backend:
+    name: Backend Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
 
-      # Cache Node modules
-      - name: Cache Node modules
-        uses: actions/cache@v3
-        with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      # Cache Python packages
-      - name: Cache Python packages
+      - name: Cache pip dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
@@ -43,18 +59,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # Install frontend deps
-      - name: Install frontend dependencies
-        run: cd frontend && npm install
-
-      # Install backend deps
       - name: Install backend dependencies
         run: cd backend && pip install -r requirements.txt
 
-      # Run frontend build
-      - name: Build frontend
-        run: cd frontend && npm run build
-
-      # Run backend lint / test (optional)
-      - name: Test backend
-        run: cd backend && echo "Add tests here"
+      - name: Run backend tests
+        run: cd backend && pytest --maxfail=1 --disable-warnings -q
