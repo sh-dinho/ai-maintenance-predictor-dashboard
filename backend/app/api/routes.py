@@ -6,9 +6,9 @@ Version: 1.0
 
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import JSONResponse
-from ml.predict import predict_risks
-from llm.recommend import generate_recommendations
-from utils.csv_loader import parse_csv
+from app.ml.predict import predict_risks
+from app.llm.recommend import generate_recommendations
+from app.utils.csv_loader import parse_csv
 
 router = APIRouter()
 

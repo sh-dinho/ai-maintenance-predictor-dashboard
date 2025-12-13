@@ -6,9 +6,13 @@ Version: 1.0
 
 import joblib
 from .features import extract_features
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "model.pkl")
 
 # Load model once at startup
-model = joblib.load("app/ml/model.pkl")
+model = joblib.load(MODEL_PATH)
 
 def predict_risks(rows):
     features = [extract_features(r) for r in rows]
