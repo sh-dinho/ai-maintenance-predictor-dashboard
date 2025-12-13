@@ -1,4 +1,10 @@
-import { RiskRow } from "@/types";
+/**
+ * File: src/components/RiskTable.tsx
+ * Purpose: Displays validated equipment risk data in a table
+ * Version: 1.0
+ */
+
+import { RiskRow } from "../../types";
 
 export default function RiskTable({ data }: { data: RiskRow[] }) {
   if (!data || data.length === 0) {

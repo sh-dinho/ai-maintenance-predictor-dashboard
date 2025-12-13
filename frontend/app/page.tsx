@@ -1,3 +1,9 @@
+/**
+ * File: app/page.tsx
+ * Purpose: Main dashboard page combining Upload, RiskSummary, RiskTable, and RecommendationPanel
+ * Version: 1.0
+ */
+
 'use client';
 
 import Upload from "@/components/Upload";
@@ -5,7 +11,7 @@ import RiskTable from "@/components/RiskTable";
 import RecommendationPanel from "@/components/RecommendationPanel";
 import RiskSummary from "@/components/RiskSummary";
 import { useState } from "react";
-import { RiskRow } from "@/types";
+import { RiskRow } from "../../types";
 
 export default function HomePage() {
   const [data, setData] = useState<RiskRow[]>([]);

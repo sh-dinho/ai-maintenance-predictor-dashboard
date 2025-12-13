@@ -1,8 +1,15 @@
+/**
+ * File: src/components/Upload.tsx
+ * Purpose: Handles CSV upload, preview, validation, error reporting, and downloadable error report
+ * Version: 1.0
+ */
+
 'use client';
 
 import { useState } from 'react';
 import Papa from 'papaparse';
-import { RiskRow } from "@/types";
+import { RiskRow, ValidationIssue } from "../../types";
+import { validateRiskRow } from "@/src/utils/validateRiskRow";
 
 type UploadProps = {
   onUploadComplete: (data: RiskRow[]) => void;
@@ -11,31 +18,44 @@ type UploadProps = {
 export default function Upload({ onUploadComplete }: UploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorReport, setErrorReport] = useState<ValidationIssue[]>([]);
   const [preview, setPreview] = useState<RiskRow[]>([]);
   const [dragActive, setDragActive] = useState(false);
 
   const handleFile = (f: File) => {
     if (f.type !== "text/csv") {
-      setError("Only CSV files are allowed.");
+      setErrorReport([{ reason: "Only CSV files are allowed." }]);
       return;
     }
     setFile(f);
-    setError(null);
+    setErrorReport([]);
     setPreview([]);
   };
 
   const handlePreview = () => {
     if (!file) return;
-    Papa.parse(file, {
+
+    Papa.parse<RiskRow>(file, {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        const parsed = results.data as RiskRow[];
-        setPreview(parsed);
+        const validated: RiskRow[] = [];
+        const issues: ValidationIssue[] = [];
+
+        results.data.forEach((row) => {
+          const { valid, issue } = validateRiskRow(row);
+          if (valid) {
+            validated.push(valid);
+          } else if (issue) {
+            issues.push(issue);
+          }
+        });
+
+        setPreview(validated);
+        setErrorReport(issues);
       },
       error: (err) => {
-        setError(`Failed to parse CSV: ${err.message}`);
+        setErrorReport([{ reason: `Failed to parse CSV: ${err.message}` }]);
       },
     });
   };
@@ -43,24 +63,32 @@ export default function Upload({ onUploadComplete }: UploadProps) {
   const handleUpload = async () => {
     if (!file) return;
     setLoading(true);
-    setError(null);
 
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-      const res = await fetch(
-        process.env.NEXT_PUBLIC_BACKEND_URL + '/upload',
-        { method: 'POST', body: formData }
-      );
+      const res = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + '/upload', {
+        method: 'POST',
+        body: formData,
+      });
       const json = await res.json();
       if (!res.ok) throw new Error(json.message || 'Upload failed');
       onUploadComplete(json.results as RiskRow[]);
     } catch (err: any) {
-      setError(err.message || 'Failed to upload CSV');
+      setErrorReport([{ reason: err.message || 'Failed to upload CSV' }]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const downloadErrorReport = () => {
+    const csvContent = "data:text/csv;charset=utf-8," +
+      ["equipment_id,reason", ...errorReport.map(i => `${i.equipment_id || "Unknown"},${i.reason}`)].join("\n");
+    const link = document.createElement("a");
+    link.href = encodeURI(csvContent);
+    link.download = "validation_errors.csv";
+    link.click();
   };
 
   return (
@@ -74,13 +102,7 @@ export default function Upload({ onUploadComplete }: UploadProps) {
         onDrop={(e) => { e.preventDefault(); setDragActive(false); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); }}
         className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
       >
-        <input
-          type="file"
-          accept=".csv"
-          onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
-          className="hidden"
-          id="fileInput"
-        />
+        <input type="file" accept=".csv" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} className="hidden" id="fileInput" />
         <label htmlFor="fileInput" className="block text-sm text-gray-600">
           {file ? <span className="font-medium text-gray-800">{file.name}</span> : "Drag & drop your CSV here, or click to browse"}
         </label>
@@ -93,14 +115,26 @@ export default function Upload({ onUploadComplete }: UploadProps) {
         </button>
       </div>
 
-      {error && <p className="text-sm text-red-500 mt-3">{error}</p>}
+      {errorReport.length > 0 && (
+        <div className="mt-4 text-sm text-red-600 whitespace-pre-line">
+          ⚠️ {errorReport.length} issue(s) found:
+          <ul className="list-disc ml-5 mt-2">
+            {errorReport.map((i, idx) => (
+              <li key={idx}>{i.equipment_id || "Unknown"} → {i.reason}</li>
+            ))}
+          </ul>
+          <button onClick={downloadErrorReport} className="mt-2 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+            Download Error Report (CSV)
+          </button>
+        </div>
+      )}
 
       {preview.length > 0 && (
         <div className="mt-4">
           <h3 className="font-semibold mb-2">Preview (first 5 rows)</h3>
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="border-b">
+                <tr className="border-b">
                 <th className="text-left py-1">Equipment</th>
                 <th className="text-left py-1">Failure Probability</th>
                 <th className="text-left py-1">Risk Level</th>
