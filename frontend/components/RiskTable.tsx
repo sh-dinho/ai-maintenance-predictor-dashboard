@@ -1,8 +1,4 @@
-type RiskRow = {
-  equipment_id: string;
-  failure_probability: number;
-  risk_level: "High" | "Medium" | "Low";
-};
+import { RiskRow } from "@/types";
 
 export default function RiskTable({ data }: { data: RiskRow[] }) {
   if (!data || data.length === 0) {
@@ -13,10 +9,16 @@ export default function RiskTable({ data }: { data: RiskRow[] }) {
     );
   }
 
-  const riskColors: Record<RiskRow["risk_level"], string> = {
-    High: "bg-red-500",
-    Medium: "bg-yellow-500",
-    Low: "bg-green-500",
+  const riskBadgeColors: Record<RiskRow["risk_level"], string> = {
+    High: "bg-red-500 text-white",
+    Medium: "bg-yellow-400 text-black",
+    Low: "bg-green-500 text-white",
+  };
+
+  const rowBgColors: Record<RiskRow["risk_level"], string> = {
+    High: "bg-red-50",
+    Medium: "bg-yellow-50",
+    Low: "bg-green-50",
   };
 
   return (
@@ -25,25 +27,25 @@ export default function RiskTable({ data }: { data: RiskRow[] }) {
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr className="border-b">
-            <th scope="col" className="text-left py-2">Equipment</th>
-            <th scope="col" className="text-left py-2">Risk %</th>
-            <th scope="col" className="text-left py-2">Status</th>
+            <th className="text-left py-2">Equipment</th>
+            <th className="text-left py-2">Risk %</th>
+            <th className="text-left py-2">Status</th>
+            <th className="text-left py-2">Last Maintenance</th>
+            <th className="text-left py-2">Location</th>
           </tr>
         </thead>
         <tbody>
           {data.map((row) => (
-            <tr key={row.equipment_id} className="border-b last:border-0">
-              <td className="py-2">{row.equipment_id}</td>
-              <td className="py-2">
-                {(row.failure_probability * 100).toFixed(1)}%
-              </td>
-              <td className="py-2">
-                <span
-                  className={`px-2 py-1 rounded text-white text-xs ${riskColors[row.risk_level]}`}
-                >
+            <tr key={row.equipment_id} className={`border-b last:border-0 hover:bg-gray-100 transition ${rowBgColors[row.risk_level]}`}>
+              <td className="py-2 px-2">{row.equipment_id}</td>
+              <td className="py-2 px-2">{(row.failure_probability * 100).toFixed(1)}%</td>
+              <td className="py-2 px-2">
+                <span className={`px-2 py-1 rounded text-xs font-semibold ${riskBadgeColors[row.risk_level]}`}>
                   {row.risk_level}
                 </span>
               </td>
+              <td className="py-2 px-2">{row.lastMaintenanceDate || "-"}</td>
+              <td className="py-2 px-2">{row.sensorLocation || "-"}</td>
             </tr>
           ))}
         </tbody>
