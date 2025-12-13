@@ -1,14 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { RiskRow } from "@/types";
 
-type RiskRow = {
-  equipment_id: string;
-  failure_probability: number;
-  risk_level: "High" | "Medium" | "Low";
-};
-
-type RiskSummaryProps = {
-  data: RiskRow[];
-};
+type RiskSummaryProps = { data: RiskRow[] };
 
 export default function RiskSummary({ data }: RiskSummaryProps) {
   const counts = data.reduce(
@@ -39,18 +32,28 @@ export default function RiskSummary({ data }: RiskSummaryProps) {
           Upload CSVs to see summary of equipment risk.
         </p>
       ) : (
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={chartData} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
-            <XAxis dataKey="risk" />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
-            <Bar dataKey="count" label={{ position: "top" }}>
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={colors[entry.risk]} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={chartData} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
+              <XAxis dataKey="risk" />
+              <YAxis allowDecimals={false} />
+              <Tooltip formatter={(value, name, props) => [`${value}`, `${props.payload.risk} Risk`]} />
+              <Bar
+                dataKey="count"
+                label={{ position: "top", fill: "#374151", fontSize: 12 }}
+                isAnimationActive={true}
+                animationDuration={800}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={colors[entry.risk]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <p className="mt-4 text-gray-700">
+            Total equipment analyzed: <span className="font-semibold">{data.length}</span>
+          </p>
+        </>
       )}
     </div>
   );
