@@ -1,3 +1,9 @@
+/**
+ * File: src/components/RecommendationPanel.tsx
+ * Purpose: Displays AI-generated maintenance recommendations based on risk levels
+ * Version: 1.0
+ */
+
 type RecommendationPanelProps = {
   recommendations: string[];
 };
