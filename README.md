@@ -43,7 +43,7 @@ Architecture
  /app
   /page.tsx            → Dashboard
 /components
-  UploadCard.tsx
+  Upload.tsx
   KPICards.tsx
   RiskTable.tsx
   RiskChart.tsx
@@ -64,3 +64,8 @@ Architecture
     recommend.py
   utils/
     csv_loader.py
+
+
+# How to setup project 
+chmod +x setup.sh
+./setup.sh

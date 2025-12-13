@@ -1,37 +1,51 @@
 'use client';
 
-import Upload from "@/components/Upload"; // renamed import
+import Upload from "@/components/Upload";
+import RiskTable from "@/components/RiskTable";
+import RecommendationPanel from "@/components/RecommendationPanel";
 import { useState } from "react";
 
+type RiskRow = {
+  equipment_id: string;
+  failure_probability: number;
+  risk_level: string;
+};
+
 export default function HomePage() {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<RiskRow[]>([]);
+  const [recommendations, setRecommendations] = useState<string[]>([]);
 
-  const handleUploadClick = async () => {
-    if (data.length === 0) {
-      console.warn("No data selected yet!");
-      return;
-    }
+  const handleUploadComplete = (results: any[]) => {
+    // Update risk table data
+    setData(results);
 
-    console.log("Manual upload triggered:", data);
-
-    await fetch("/api/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data }),
-    });
+    // Generate mock recommendations for demo
+    const recs = results.map(
+      (r) =>
+        `Schedule maintenance for ${r.equipment_id} due to ${r.risk_level} risk.`
+    );
+    setRecommendations(recs);
   };
 
   return (
     <main className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-3xl font-bold mb-1.5">AI Maintenance Predictor Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-1.5">
+        AI Maintenance Predictor Dashboard
+      </h1>
       <p className="text-gray-600 mb-5">
-        Making prediction for equipment failure from sensor data.
+        Predicting equipment failure from sensor data.
       </p>
 
-      {/* Upload component just updates state */}
-      <Upload onUploadComplete={setData} />
+      {/* Upload component handles backend API call */}
+      <Upload onUploadComplete={handleUploadComplete} />
 
-       
+      {/* Dashboard layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div className="lg:col-span-2">
+          <RiskTable data={data} />
+        </div>
+        <RecommendationPanel recommendations={recommendations} />
+      </div>
     </main>
   );
 }
