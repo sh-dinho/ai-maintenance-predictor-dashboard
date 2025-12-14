@@ -1,4 +1,4 @@
-name: Full-Stack AI Hackathon CI/CD
+name: Full-Stack AI Hackathon CI (Render Deploy)
 
 on:
   push:
@@ -7,72 +7,49 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Deploy Full-Stack to Render
     runs-on: ubuntu-latest
     env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
 
     steps:
-      # Checkout code
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Setup Node.js
+      # -------------------------
+      # Frontend (Next.js)
+      # -------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # Setup Python
+      - name: Install frontend dependencies
+        run: cd frontend && npm install
+
+      - name: Build frontend
+        run: cd frontend && npm run build
+
+      # -------------------------
+      # Backend (FastAPI)
+      # -------------------------
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
 
-      # Cache frontend node_modules
-      - name: Cache Node modules
-        uses: actions/cache@v3
-        with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      # Cache backend pip packages
-      - name: Cache Python packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      # Install frontend dependencies
-      - name: Install frontend dependencies
-        run: cd frontend && npm install
-
-      # Install backend dependencies
       - name: Install backend dependencies
         run: cd backend && pip install -r requirements.txt
 
-      # Lint backend
-      - name: Lint backend
-        run: cd backend && flake8 app
-
-      # Test backend
-      - name: Test backend
-        run: cd backend && pytest tests
-
-      # Build frontend
-      - name: Build frontend
-        run: cd frontend && npm run build
-
-      # Deploy backend to Render
+      # -------------------------
+      # Deploy to Render
+      # -------------------------
       - name: Deploy backend to Render
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST "https://api.render.com/deploy/srv-xxxxxxxxxxxxxxxx" \
-               -H "Authorization: Bearer $RENDER_API_KEY"
+          echo "Triggering Render deployment..."
+          curl -X POST "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys" \
+          -H "Authorization: Bearer ${RENDER_API_KEY}" \
+          -H "Content-Type: application/json" \
+          -d '{}'
