@@ -7,7 +7,6 @@ joblib==1.4.2
 scikit-learn==1.5.2
 numpy>=1.26.0,<2.0.0
 pandas==2.2.3
-protobuf>=3.20.3,<5.0.0
 
 # --- Utilities ---
 python-multipart==0.0.9
@@ -15,6 +14,3 @@ python-multipart==0.0.9
 # --- LLM Integration ---
 openai==1.52.0
 azure-ai-openai==11.0.2
-
-# --- TensorFlow ---
-tensorflow==2.20.0
