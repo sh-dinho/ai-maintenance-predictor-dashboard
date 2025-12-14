@@ -1,71 +1,99 @@
-"""
-File: app/api/routes.py
-Purpose: Defines REST API endpoints for CSV upload, prediction, and recommendations
-Version: 1.1
-"""
+# File: app/api/routes.py
+# Purpose: REST API endpoints for CSV upload, prediction, and recommendations
+# Version: 2.0
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
-from app.ml.predict import predict_risks
+import joblib
+import csv
+from io import StringIO
+
 from app.llm.recommend import generate_recommendations
-from app.utils.csv_loader import parse_csv
 
 router = APIRouter(prefix="/api", tags=["API"])
+
+# Load the trained RandomForest model once
+model_path = "app/ml/model.pkl"
+model = joblib.load(model_path)
+
+# Feature columns expected by the model
+FEATURE_COLS = ["temperature", "vibration", "pressure", "runtime"]
+
+# CSV parser
+async def parse_csv(file: UploadFile):
+    content = await file.read()
+    decoded = content.decode("utf-8")
+    reader = csv.DictReader(StringIO(decoded))
+    rows = []
+    for row in reader:
+        try:
+            features = [float(row[col]) for col in FEATURE_COLS]
+            rows.append({
+                "equipment_id": row.get("equipment_id", "Unknown"),
+                "features": features,
+                "lastMaintenanceDate": row.get("lastMaintenanceDate"),
+                "sensorLocation": row.get("sensorLocation")
+            })
+        except Exception:
+            continue  # skip invalid rows
+    if not rows:
+        raise HTTPException(status_code=400, detail="No valid rows found in CSV")
+    return rows
+
+
+# Helper to map numeric prediction to risk level
+RISK_MAP = {0: "Low", 1: "Medium", 2: "High"}
+
 
 @router.post("/upload")
 async def upload_csv(file: UploadFile = File(...)):
     if not file.filename or not file.filename.lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are supported")
 
-    try:
-        rows = await parse_csv(file)
-        return JSONResponse(
-            content={"rows_count": len(rows), "rows": rows},
-            headers={"X-Endpoint": "upload"}
-        )
-    except Exception as e:
-        return JSONResponse(
-            status_code=400,
-            content={"error": str(e)}
-        )
+    rows = await parse_csv(file)
+    return JSONResponse(
+        content={"rows_count": len(rows), "rows": rows},
+        headers={"X-Endpoint": "upload"}
+    )
+
 
 @router.post("/predict")
 async def predict(file: UploadFile = File(...)):
     if not file.filename or not file.filename.lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are supported")
 
-    try:
-        rows = await parse_csv(file)
-        predictions = predict_risks(rows)
-        recommendations = generate_recommendations(predictions)
-        return JSONResponse(
-            content={
-                "predictions": predictions,
-                "recommendations": recommendations
-            },
-            headers={"X-Endpoint": "predict"}
-        )
-    except Exception as e:
-        return JSONResponse(
-            status_code=400,
-            content={"error": str(e)}
-        )
+
+    rows = await parse_csv(file)
+    X = [r["features"] for r in rows]
+    preds = model.predict(X)
+
+    # Map predictions to risk_level
+    for r, p in zip(rows, preds):
+        r["risk_level"] = RISK_MAP.get(p, "Low")
+
+    return JSONResponse(
+        content={"rows_count": len(rows), "predictions": rows},
+        headers={"X-Endpoint": "predict"}
+    )
+
 
 @router.post("/recommend")
 async def recommend(file: UploadFile = File(...)):
     if not file.filename or not file.filename.lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are supported")
 
-    try:
-        rows = await parse_csv(file)
-        predictions = predict_risks(rows)
-        recs = generate_recommendations(predictions)
-        return JSONResponse(
-            content={"rows_count": len(recs), "recommendations": recs},
-            headers={"X-Endpoint": "recommend"}
-        )
-    except Exception as e:
-        return JSONResponse(
-            status_code=400,
-            content={"error": str(e)}
-        )
+
+    rows = await parse_csv(file)
+    X = [r["features"] for r in rows]
+    preds = model.predict(X)
+
+    # Map predictions to risk_level
+    for r, p in zip(rows, preds):
+        r["risk_level"] = RISK_MAP.get(p, "Low")
+
+    recs = generate_recommendations(rows)
+
+    return JSONResponse(
+        content={"rows_count": len(rows), "recommendations": recs},
+        headers={"X-Endpoint": "recommend"}
+    )

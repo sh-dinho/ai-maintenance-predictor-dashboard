@@ -1,0 +1,21 @@
+equipment_id,temperature,vibration,pressure,runtime,lastMaintenanceDate,sensorLocation
+Equip-1,27.79,4.53,16.20,308.13,2025-10-12,Boiler Room
+Equip-2,29.43,6.34,36.33,219.42,2025-03-29,Boiler Room
+Equip-3,25.50,0.74,33.82,935.67,2025-02-23,Boiler Room
+Equip-4,46.16,1.16,41.68,554.67,2025-08-01,Storage Room
+Equip-5,55.92,1.36,44.92,669.89,2025-08-10,Boiler Room
+Equip-6,47.71,8.91,46.71,732.35,2025-03-20,Storage Room
+Equip-7,90.97,9.05,36.08,573.49,2025-08-02,Assembly Area
+Equip-8,86.52,9.57,12.12,717.95,2025-09-05,Workshop
+Equip-9,23.06,5.18,18.70,628.65,2025-06-15,Assembly Area
+Equip-10,31.31,7.23,36.55,171.30,2025-03-18,Workshop
+Equip-11,76.47,4.67,38.55,762.62,2025-04-24,Assembly Area
+Equip-12,94.45,4.65,32.74,521.76,2025-08-26,Main Line
+Equip-13,46.48,8.15,17.22,278.76,2025-05-20,Storage Room
+Equip-14,28.80,1.26,30.95,399.90,2025-05-31,Control Panel
+Equip-15,21.22,8.05,22.58,626.34,2025-10-04,Control Panel
+Equip-16,58.95,7.69,27.42,630.59,2025-03-05,Main Line
+Equip-17,33.64,0.88,3.77,280.87,2025-09-15,Assembly Area
+Equip-18,63.66,2.21,17.42,53.85,2025-08-13,Assembly Area
+Equip-19,44.14,8.98,18.04,38.25,2025-10-03,Storage Room
+Equip-20,93.82,3.75,29.37,778.63,2025-05-15,Underground
