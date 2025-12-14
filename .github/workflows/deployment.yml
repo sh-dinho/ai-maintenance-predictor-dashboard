@@ -55,6 +55,10 @@ jobs:
       - name: Build frontend
         run: cd frontend && npm run build
 
-      # Run backend tests (optional placeholder)
-      - name: Test backend
-        run: cd backend && echo "Add backend tests here"
+      # Deploy backend to Render
+      - name: Deploy backend to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          curl -X POST "https://api.render.com/deploy/srv-xxxxxxxxxxxxxxxx" \
+               -H "Authorization: Bearer $RENDER_API_KEY"
