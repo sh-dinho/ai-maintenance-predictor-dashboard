@@ -1,10 +1,15 @@
 /**
- * Script: generate_random_csv.js
- * Purpose: Generate random CSV files for testing Upload & Validation
- * Usage:   node generate_random_csv.js
+ * Script: generate_model_ready_csv.js
+ * Purpose: Generate random CSV compatible with the backend dummy ML model
+ * Usage:   node generate_model_ready_csv.js
  */
 
 const fs = require("fs");
+
+// Utility: random float in a range
+function randomFloat(min, max) {
+  return (Math.random() * (max - min) + min).toFixed(2);
+}
 
 // Utility: random date in 2025
 function randomDate() {
@@ -20,44 +25,18 @@ function randomLocation() {
   return locations[Math.floor(Math.random() * locations.length)];
 }
 
-// Utility: random risk level
-const riskLevels = ["High", "Medium", "Low"];
-function randomRisk() {
-  return riskLevels[Math.floor(Math.random() * riskLevels.length)];
-}
-
-// Generate valid rows
-function generateValidRows(count) {
-  let rows = "equipment_id,failure_probability,risk_level,lastMaintenanceDate,sensorLocation\n";
+// Generate CSV rows
+function generateRows(count) {
+  let rows = "equipment_id,temperature,vibration,pressure,runtime,lastMaintenanceDate,sensorLocation\n";
   for (let i = 1; i <= count; i++) {
-    rows += `Equip-${i},${(Math.random()).toFixed(2)},${randomRisk()},${randomDate()},${randomLocation()}\n`;
+    rows += `Equip-${i},${randomFloat(20, 100)},${randomFloat(0, 10)},${randomFloat(1, 50)},${randomFloat(0, 1000)},${randomDate()},${randomLocation()}\n`;
   }
   return rows;
 }
 
-// Generate mixed rows (valid + invalid)
-function generateMixedRows(count) {
-  let rows = "equipment_id,failure_probability,risk_level,lastMaintenanceDate,sensorLocation\n";
-  for (let i = 1; i <= count; i++) {
-    const invalidChance = Math.random();
-    let failureProb = (Math.random()).toFixed(2);
-    let risk = randomRisk();
-    let date = randomDate();
+// Write file
+const filename = "model_ready_random.csv";
+fs.writeFileSync(filename, generateRows(20));
 
-    if (invalidChance < 0.25) failureProb = "abc"; // invalid number
-    else if (invalidChance < 0.5) failureProb = "1.5"; // >1 invalid
-    else if (invalidChance < 0.75) risk = "InvalidRisk"; // invalid risk
-    else if (invalidChance < 1.0) date = "not-a-date"; // invalid date
-
-    rows += `Equip-${i},${failureProb},${risk},${date},${randomLocation()}\n`;
-  }
-  return rows;
-}
-
-// Write files
-fs.writeFileSync("random_valid.csv", generateValidRows(20));
-fs.writeFileSync("random_mixed.csv", generateMixedRows(20));
-
-console.log("✅ Random CSV files generated:");
-console.log(" - random_valid.csv (20 valid rows)");
-console.log(" - random_mixed.csv (20 mixed valid + invalid rows)");
+console.log(`✅ CSV generated: ${filename}`);
+console.log(" - 20 rows with 4 numeric features + equipment_id, lastMaintenanceDate, sensorLocation");
