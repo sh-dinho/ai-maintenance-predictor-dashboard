@@ -1,13 +1,32 @@
-# Node
-frontend/node_modules
-frontend/.next
+# ====================
+# Node / Frontend
+# ====================
+frontend/node_modules/
+frontend/.next/
 frontend/.env*
+frontend/dist/
+frontend/out/
 
-# Python
-backend/venv
-backend/__pycache__
+# ====================
+# Python / Backend
+# ====================
+backend/venv/
+backend/__pycache__/
 backend/*.pkl
 backend/.env
+backend/.pytest_cache/
 
-# OS
+# ====================
+# OS / Misc
+# ====================
 .DS_Store
+Thumbs.db
+*.log
+
+# ====================
+# Optional IDE / Editor
+# ====================
+.vscode/
+.idea/
+*.suo
+*.swp
