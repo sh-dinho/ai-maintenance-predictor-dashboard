@@ -4,7 +4,7 @@
  * Version: 1.1
  */
 
-import { RiskRow } from "../../types";
+import { RiskRow } from "../types";
 
 export default function RiskTable({ data }: { data: RiskRow[] }) {
   if (!data || data.length === 0) {

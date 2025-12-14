@@ -11,7 +11,7 @@ import RiskTable from "@/components/RiskTable";
 import RecommendationPanel from "@/components/RecommendationPanel";
 import RiskSummary from "@/components/RiskSummary";
 import { useState } from "react";
-import { RiskRow } from "../../types";
+import { RiskRow } from '@/types';
 
 export default function HomePage() {
   const [data, setData] = useState<RiskRow[]>([]);

@@ -7,7 +7,7 @@
 'use client';
 
 import { useState } from 'react';
-import { RiskRow, ValidationIssue } from "../../types";
+import { RiskRow, ValidationIssue } from "../types";
 
 type UploadProps = {
   onUploadComplete: (results: { predictions: RiskRow[], recommendations: string[] }) => void;

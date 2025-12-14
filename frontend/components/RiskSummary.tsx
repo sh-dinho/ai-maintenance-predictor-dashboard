@@ -13,7 +13,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { RiskRow } from "../../types";
+import { RiskRow } from "../types";
 
 type RiskSummaryProps = { data: RiskRow[] };
 

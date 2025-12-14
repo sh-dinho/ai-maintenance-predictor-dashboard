@@ -4,7 +4,7 @@
  * Version: 1.0
  */
 
-import { RiskRow, ValidationIssue } from "../../../types";
+import { RiskRow, ValidationIssue } from "../../types";
 
 export function validateRiskRow(row: Partial<RiskRow>): { valid: RiskRow | null; issue?: ValidationIssue } {
   if (!row.equipment_id || typeof row.equipment_id !== "string") {
