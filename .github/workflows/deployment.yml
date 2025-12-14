@@ -37,13 +37,13 @@ jobs:
       - name: Build frontend
         run: cd frontend && npm run build
 
-      - name: Deploy frontend to Vercel
-        run: |
-          cd frontend
-          npx vercel --prod --token $VERCEL_TOKEN \
-          --confirm \
-          --scope $VERCEL_ORG_ID \
-          --project $VERCEL_PROJECT_ID
+      # - name: Deploy frontend to Vercel
+      #   run: |
+      #     cd frontend
+      #     npx vercel --prod --token $VERCEL_TOKEN \
+      #     --confirm \
+      #     --scope $VERCEL_ORG_ID \
+      #     --project $VERCEL_PROJECT_ID
 
       # -------------------------
       # Backend (FastAPI → Render)

@@ -16,5 +16,5 @@ python-multipart==0.0.9
 openai==1.52.0
 azure-ai-openai==11.0.2
 
-# --- TensorFlow (Linux/CI) ---
-tensorflow==2.17.0
+# --- TensorFlow ---
+tensorflow==2.20.0
