@@ -1,7 +1,7 @@
 /**
  * File: app/page.tsx
  * Purpose: Main dashboard page combining Upload, RiskSummary, RiskTable, and RecommendationPanel
- * Version: 1.0
+ * Version: 1.1
  */
 
 'use client';
@@ -17,20 +17,13 @@ export default function HomePage() {
   const [data, setData] = useState<RiskRow[]>([]);
   const [recommendations, setRecommendations] = useState<string[]>([]);
 
-  const handleUploadComplete = (results: RiskRow[]) => {
-    setData(results);
-
-    const recs = results.map((r) => {
-      if (r.risk_level === "High") {
-        return `⚠️ Immediate maintenance required for ${r.equipment_id} (High risk).`;
-      } else if (r.risk_level === "Medium") {
-        return `🔍 Monitor ${r.equipment_id} closely and schedule a routine check (Medium risk).`;
-      } else {
-        return `✅ Routine inspection recommended for ${r.equipment_id} (Low risk).`;
-      }
-    });
-
-    setRecommendations(recs);
+  // Called after backend returns predictions & recommendations
+  const handleUploadComplete = (results: {
+    predictions: RiskRow[];
+    recommendations: string[];
+  }) => {
+    setData(results.predictions);
+    setRecommendations(results.recommendations);
   };
 
   return (
@@ -38,13 +31,17 @@ export default function HomePage() {
       <h1 className="text-3xl font-bold mb-1.5">AI Maintenance Predictor Dashboard</h1>
       <p className="text-gray-600 mb-5">Predicting equipment failure from sensor data.</p>
 
+      {/* Upload CSV & trigger backend predictions */}
       <Upload onUploadComplete={handleUploadComplete} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        {/* Left column: summary & table */}
         <div className="lg:col-span-2 space-y-6">
           <RiskSummary data={data} />
           <RiskTable data={data} />
         </div>
+
+        {/* Right column: AI-generated recommendations */}
         <RecommendationPanel recommendations={recommendations} />
       </div>
     </main>

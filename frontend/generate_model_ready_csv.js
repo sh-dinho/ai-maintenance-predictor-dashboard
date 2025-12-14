@@ -1,17 +1,17 @@
 /**
  * Script: generate_model_ready_csv.js
- * Purpose: Generate random CSV compatible with the backend dummy ML model
+ * Purpose: Generate CSV compatible with backend ML model
  * Usage:   node generate_model_ready_csv.js
  */
 
 const fs = require("fs");
 
-// Utility: random float in a range
+// Utility: random float in range
 function randomFloat(min, max) {
   return (Math.random() * (max - min) + min).toFixed(2);
 }
 
-// Utility: random date in 2025
+// Random date in 2025
 function randomDate() {
   const start = new Date(2025, 0, 1);
   const end = new Date(2025, 11, 31);
@@ -19,7 +19,7 @@ function randomDate() {
   return d.toISOString().split("T")[0];
 }
 
-// Utility: random location
+// Random location
 const locations = ["Boiler Room", "Main Line", "Assembly Area", "Storage Room", "Control Panel", "Workshop", "Underground"];
 function randomLocation() {
   return locations[Math.floor(Math.random() * locations.length)];
@@ -29,7 +29,7 @@ function randomLocation() {
 function generateRows(count) {
   let rows = "equipment_id,temperature,vibration,pressure,runtime,lastMaintenanceDate,sensorLocation\n";
   for (let i = 1; i <= count; i++) {
-    rows += `Equip-${i},${randomFloat(20, 100)},${randomFloat(0, 10)},${randomFloat(1, 50)},${randomFloat(0, 1000)},${randomDate()},${randomLocation()}\n`;
+    rows += `Equip-${i},${randomFloat(20,100)},${randomFloat(0,10)},${randomFloat(1,50)},${randomFloat(0,1000)},${randomDate()},${randomLocation()}\n`;
   }
   return rows;
 }

@@ -1,7 +1,7 @@
 /**
  * File: src/components/RiskTable.tsx
  * Purpose: Displays validated equipment risk data in a table
- * Version: 1.0
+ * Version: 1.1
  */
 
 import { RiskRow } from "../../types";
@@ -28,30 +28,35 @@ export default function RiskTable({ data }: { data: RiskRow[] }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
+    <div className="bg-white p-6 rounded-lg shadow overflow-x-auto">
       <h2 className="font-semibold text-lg mb-4">Equipment Risk Overview</h2>
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr className="border-b">
-            <th className="text-left py-2">Equipment</th>
-            <th className="text-left py-2">Risk %</th>
-            <th className="text-left py-2">Status</th>
-            <th className="text-left py-2">Last Maintenance</th>
-            <th className="text-left py-2">Location</th>
+            <th className="text-left py-2 px-2">Equipment</th>
+            <th className="text-left py-2 px-2">Risk %</th>
+            <th className="text-left py-2 px-2">Status</th>
+            <th className="text-left py-2 px-2">Last Maintenance</th>
+            <th className="text-left py-2 px-2">Location</th>
           </tr>
         </thead>
         <tbody>
           {data.map((row) => (
-            <tr key={row.equipment_id} className={`border-b last:border-0 hover:bg-gray-100 transition ${rowBgColors[row.risk_level]}`}>
-              <td className="py-2 px-2">{row.equipment_id}</td>
+            <tr
+              key={row.equipment_id}
+              className={`border-b last:border-0 hover:bg-gray-100 transition ${rowBgColors[row.risk_level]}`}
+            >
+              <td className="py-2 px-2 truncate">{row.equipment_id}</td>
               <td className="py-2 px-2">{(row.failure_probability * 100).toFixed(1)}%</td>
               <td className="py-2 px-2">
-                <span className={`px-2 py-1 rounded text-xs font-semibold ${riskBadgeColors[row.risk_level]}`}>
+                <span
+                  className={`px-2 py-1 rounded text-xs font-semibold ${riskBadgeColors[row.risk_level]}`}
+                >
                   {row.risk_level}
                 </span>
               </td>
               <td className="py-2 px-2">{row.lastMaintenanceDate || "-"}</td>
-              <td className="py-2 px-2">{row.sensorLocation || "-"}</td>
+              <td className="py-2 px-2 truncate">{row.sensorLocation || "-"}</td>
             </tr>
           ))}
         </tbody>
