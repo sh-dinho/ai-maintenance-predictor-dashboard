@@ -1,4 +1,4 @@
-name: Full-Stack AI Hackathon CI
+name: Full-Stack AI Hackathon CI/CD
 
 on:
   push:
@@ -7,10 +7,16 @@ on:
     branches: [ main ]
 
 jobs:
-  setup:
-    name: Setup Node & Python
+  build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
     steps:
+      # Checkout code
       - uses: actions/checkout@v3
 
       # Setup Node.js
@@ -25,7 +31,7 @@ jobs:
         with:
           python-version: 3.11
 
-      # Cache Node modules
+      # Cache frontend node_modules
       - name: Cache Node modules
         uses: actions/cache@v3
         with:
@@ -34,7 +40,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Cache Python packages
+      # Cache backend pip packages
       - name: Cache Python packages
         uses: actions/cache@v3
         with:
@@ -43,13 +49,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # Install frontend deps
+      # Install frontend dependencies
       - name: Install frontend dependencies
         run: cd frontend && npm install
 
-      # Install backend deps
+      # Install backend dependencies
       - name: Install backend dependencies
         run: cd backend && pip install -r requirements.txt
+
+      # Lint frontend
+      - name: Lint frontend
+        run: cd frontend && npm run lint
+
+      # Test frontend
+      - name: Test frontend
+        run: cd frontend && npm run test
+
+      # Lint backend
+      - name: Lint backend
+        run: cd backend && flake8 app
+
+      # Test backend
+      - name: Test backend
+        run: cd backend && pytest tests
 
       # Build frontend
       - name: Build frontend
