@@ -51,10 +51,10 @@ jobs:
       - name: Install backend dependencies
         run: cd backend && pip install -r requirements.txt
 
-      # Run frontend build
+      # Build frontend
       - name: Build frontend
         run: cd frontend && npm run build
 
-      # Run backend lint / test (optional)
+      # Run backend tests (optional placeholder)
       - name: Test backend
-        run: cd backend && echo "Add tests here"
+        run: cd backend && echo "Add backend tests here"
