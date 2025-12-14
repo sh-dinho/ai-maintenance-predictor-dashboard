@@ -1,10 +1,10 @@
 /**
  * File: app/page.tsx
  * Purpose: Main dashboard page combining Upload, RiskSummary, RiskTable, and RecommendationPanel
- * Version: 1.0
+ * Version: 1.1
  */
 
-'use client';
+"use client";
 
 import Upload from "@/components/Upload";
 import RiskTable from "@/components/RiskTable";
@@ -16,27 +16,24 @@ import { RiskRow } from "../../types";
 export default function HomePage() {
   const [data, setData] = useState<RiskRow[]>([]);
   const [recommendations, setRecommendations] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleUploadComplete = (results: RiskRow[]) => {
-    setData(results);
-
-    const recs = results.map((r) => {
-      if (r.risk_level === "High") {
-        return `⚠️ Immediate maintenance required for ${r.equipment_id} (High risk).`;
-      } else if (r.risk_level === "Medium") {
-        return `🔍 Monitor ${r.equipment_id} closely and schedule a routine check (Medium risk).`;
-      } else {
-        return `✅ Routine inspection recommended for ${r.equipment_id} (Low risk).`;
-      }
-    });
-
-    setRecommendations(recs);
+  const handleUploadComplete = async (results: {
+    predictions: RiskRow[];
+    recommendations: string[];
+  }) => {
+    setData(results.predictions);
+    setRecommendations(results.recommendations);
   };
 
   return (
     <main className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-3xl font-bold mb-1.5">AI Maintenance Predictor Dashboard</h1>
-      <p className="text-gray-600 mb-5">Predicting equipment failure from sensor data.</p>
+      <h1 className="text-3xl font-bold mb-1.5">
+        AI Maintenance Predictor Dashboard
+      </h1>
+      <p className="text-gray-600 mb-5">
+        Predicting equipment failure from sensor data.
+      </p>
 
       <Upload onUploadComplete={handleUploadComplete} />
 
@@ -45,6 +42,7 @@ export default function HomePage() {
           <RiskSummary data={data} />
           <RiskTable data={data} />
         </div>
+
         <RecommendationPanel recommendations={recommendations} />
       </div>
     </main>
